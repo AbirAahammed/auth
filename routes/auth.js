@@ -6,15 +6,27 @@ const dotenv = require('dotenv');
 
 // get config vars
 dotenv.config();
-/** Get jwt token */
-function generateWebToken(params) {
-    
+
+
+/**Default Algorithm is used HS256 */
+function generateWebToken(param) {
+  return jwt.sign(param, process.env.TOKEN_SECRET)
 }
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-    console.log(req)
-    console.log(process.env.TOKEN_SECRET);
-    res.send('respond with a resource');
+
+function generateWebToken_hs512(param) {
+  return jwt.sign(param, process.env.TOKEN_SECRET_512, {algorithm: 'HS256'})
+}
+/* GET a JWT token. */
+router.get('/alltoken', function(req, res, next) {
+    console.debug(`User Name : ${req.body['username']}`)
+
+    /**Generate the token */
+    var token_HS256 = generateWebToken(req.body);
+    
+    /**Respond object */
+    var allToken = {"HS256":token_HS256}
+    
+    res.send(allToken);
   });
 
   module.exports = router;
