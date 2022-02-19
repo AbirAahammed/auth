@@ -34,3 +34,25 @@ Output:
    run the app:
      > SET DEBUG=auth:* & npm start
 ```
+
+
+Project Explaination:
+
+Tasks:
+1. Create user:
+   - Username, Email, PasswordHash, [roles:[Public, Admin, Employee]]
+     - Redis: SET abir (Email, PasswordHash)
+2. User Auth:
+  - Username, passwordhash &rarr; 
+  - 2 token: (authorization token, refresher token), (AT, RT)
+What is AT and RT?
+- AT and RT will be cahed by Servicing Application. with role.
+- RT and AT will also be in session storage.
+- AT will be data rtetrieve.
+- RT will be set to auth application to retrieve another RT and AT pair.
+
+
+Database:
+redis: TOKEN caching.
+Mysql
+
