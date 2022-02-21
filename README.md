@@ -56,3 +56,16 @@ Database:
 redis: TOKEN caching.
 Mysql
 
+
+
+Private and Public Key generation:
+```sh
+openssl genrsa -out rsa
+openssl rsa -in rsa -out rsa.pub -pubout -outform PEM
+```
+
+- [ ] Create User
+  - [ ] Create ADMIN user
+  - [ ] Create Regular User
+- [ ] Allow user activation by admin
+- [ ] Get Authorization token

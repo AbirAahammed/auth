@@ -17,6 +17,7 @@
     "morgan": "~1.9.1",
     "mysql2": "^2.3.3",
     "promise": "^8.1.0",
+    "redis": "^4.0.3",
     "request-promise": "^4.2.6",
     "sequelize": "^6.16.1",
     "sqlite3": "^5.0.2"
