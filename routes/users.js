@@ -1,13 +1,21 @@
 var express = require('express');
+const Person = require('../models/person');
 var router = express.Router();
+const { Sequelize, Model, DataTypes, transaction } = require('sequelize');
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+/**
+ * Create a new User.
+ */
+router.post('/', function (req, res, next) {
+    Person.create({
+      username: req.body['username'],
+      password: req.body['password']
+    })
+    .then(data => {
+      res.status(201).json({status:"Success", id:data.id})
+    });
+  
+})
 
-router.get('/one', function(req, res, next) {
-  res.send('respond with a resource no 1');
-});
 
 module.exports = router;

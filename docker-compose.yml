@@ -1,0 +1,17 @@
+version: '3.1'
+services:
+  auth-app-db: 
+    image: redis:latest
+    environment:
+      REDIS_PASSWORD: redis
+    networks:
+      - redis
+  auth-app:
+    image: abirahammed/express-auth:0.1
+    networks:
+      - redis
+    ports:
+      - 9000:3000
+  
+networks:
+  redis:
