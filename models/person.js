@@ -16,13 +16,5 @@ Person.init({
 
 }, { sequelize, modelName: 'person' });
 
-// (async () => {
-//   await sequelize.sync();
-//   const jane = await Person.create({
-//     username: 'janedoe',
-//     password: 'janedoe'
-//   });
-//   console.log(jane.toJSON());
-// })();
 Person.sync()
 module.exports = Person

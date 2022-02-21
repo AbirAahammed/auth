@@ -9,6 +9,8 @@ WORKDIR /app
 # install app dependencies
 COPY package.json ./
 COPY package-lock.json ./
+# COPY init.sh /run/
+# RUN chmod +x /run/init.sh
 RUN npm install --silent
 
 # add app
@@ -18,4 +20,4 @@ EXPOSE 3000/tcp
 EXPOSE 3000/udp
 
 # start app
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]

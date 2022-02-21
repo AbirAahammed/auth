@@ -18,8 +18,12 @@ function adminrequired(req, res, next) {
     cred = Buffer.from(req.headers.authorization.split(' ')[1], 'base64').toString('ascii').split(':')
     verifyUser(cred[0], cred[1])
         .then(data => {
-            if (data != null & data?.usertype == 'ADMIN') {
-                next()
+            if (data != null ) {
+                if (data.usertype == 'ADMIN'){
+                    next()
+                } else {
+                    res.status(403).send()
+                }
             } else {
                 res.status(403).send()
             }
@@ -52,13 +56,13 @@ router.get('/users',adminrequired, function(req, res, next) {
         })
 })
 
-router.get('/updateusertype', adminrequired, function(req, res, next) {
+router.put('/updateusertype', adminrequired, function(req, res, next) {
     Person.update(
         {
             usertype : req.body['usertype']
         },
         {where:{id:req.body['id']}}
-    ).then(data=> res.send(data))
+    ).then(data=> res.status(204).send(data))
 })
 
 module.exports = router
