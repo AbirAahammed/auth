@@ -12,10 +12,6 @@ var a = 'http://mysoftcorp.in'; // Audience
 
 
 
-function getCredential(authHeader) {
-    cred = Buffer.from(authHeader.split(''[1]), 'base64').toString('ascii')
-    console.log(cred)
-}
 
 exports.generateToken = function (data, expiryTime) {
     // SIGNING OPTIONS
@@ -31,7 +27,12 @@ exports.generateToken = function (data, expiryTime) {
 }
 
 
-
+/**
+ * 
+ * @param {string} username 
+ * @param {string} password 
+ * @returns {user}
+ */
 exports.verifyUser = function (username, password) {
     return Person.findOne({
         where: { username: username },
@@ -40,3 +41,21 @@ exports.verifyUser = function (username, password) {
         return person.password == password & person.usertype != null ? person : null
     })
 }
+
+/**
+ * 
+ * @param {string} token 
+ * @returns 
+ */
+exports.verifyToken = function(token) {
+    try {
+        var decoded = jwt.verify(token, publicKEY);
+    } catch (JsonWebTokenError) {
+        return null
+    }
+    return decoded;
+}
+
+
+
+// export.token = function()

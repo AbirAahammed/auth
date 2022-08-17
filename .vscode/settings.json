@@ -3,8 +3,8 @@
         {
             "previewLimit": 50,
             "driver": "SQLite",
-            "database": "${workspaceFolder:auth}/db.sqlite",
-            "name": "test"
+            "name": "db",
+            "database": "${workspaceFolder:auth}/data1.sqlite"
         }
     ]
 }

@@ -14,7 +14,6 @@ router.post('/', function (req, res, next) {
     .then(data => {
       res.status(201).json({status:"Success", id:data.id})
     });
-  
 })
 
 

@@ -8,6 +8,7 @@ var usersRouter = require('./routes/users');
 var authRouter = require('./routes/auth');
 var adminRouter = require('./routes/admin')
 var app = express();
+const cors = require("cors");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -31,6 +32,13 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+
+  var allowedDomains = ['http://localhost:3000',];
+  var origin = req.headers.origin;
+  console.log(origin)
+  if(allowedDomains.indexOf(origin) > -1){
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

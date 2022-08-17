@@ -3,14 +3,16 @@ var router = express.Router();
 const dotenv = require('dotenv');
 var sqlite3 = require('sqlite3').verbose()
 const Person = require('../models/person');
-const {generateToken, verifyUser } = require('../core/authorizationlogic')
+const { generateToken, verifyUser, verifyToken } = require('../core/auth')
 const { Sequelize, Model, DataTypes } = require('sequelize');
-const fs   = require('fs');
+const fs = require('fs');
+const redis = require('redis');
 
-
+const AuthToken = 'AUTH'
+const RefresherToken = 'REFRESH'
 // get config vars
 dotenv.config();
-var privateKEY  = fs.readFileSync('./rsa', 'utf8');
+var privateKEY = fs.readFileSync('./rsa', 'utf8');
 
 /**
  * handle successful response.
@@ -29,30 +31,50 @@ const handleResponse = (res, data, httpcode) => res.status(httpcode).send(data);
  */
 const handleError = (res, err) => res.status(500).send(err);
 
+const redisClient = redis.createClient(8001,'localhost');
+redisClient.on('error', (err) => {
+  console.log('Error occured while connecting or accessing redis server');
+});
 
-
-router.get('/token', function (req, res, next) {
+router.post('/token', function (req, res, next) {
   username = req.body['username']
   passwordHash = req.body['password']
-  verifyUser(username, passwordHash)
-    .then(data =>   handleResponse(res, generateToken({'userName':data.username, 'usertype':data.usertype}, '2m'), 200))
-    .catch(err => handleError(res, err, ));
+  if (!username) {
+    var decoded = verifyToken(req.body['token'])
+    var aToken = generateToken({ 'username': decoded.username, 'usertype': decoded.usertype, 'auth': 'auth' }, '5m')
+    var rToken =  generateToken({ 'username': decoded.username, 'usertype': decoded.usertype, 'tokentype': 'auth' }, '5m')
+
+    handleResponse(res, {
+      authToken : aToken,
+      refresherToken : rToken
+    }, 200)
+  redisClient.set(decoded.username,rToken, redis.print);
+  }
+  else{
+    verifyUser(username, passwordHash)
+    .then(data => handleResponse(res, {
+      refresherToken:generateToken({ 'username': data.username, 'usertype': data.usertype, 'tokentype': 'refresher' }, '15m'),
+      authToken:generateToken({ 'username': data.username, 'usertype': data.usertype, 'tokentype': 'refresher' }, '5m')
+    }, 200))
+    .catch(err => handleError(res, err,));
+  }
+
 
 });
 
 
 
-router.get('/db', function (req, res, next) {
-  
-  (async () => {
-    await Person.sync();
-    const jane = await Person.create({
-      username: 'Abir',
-      password: '008231aaf99956982ffbb132c5fe9d79272f6f109abdefb723afe455a4213765'
-    });
-    console.log(jane.toJSON());
-  })();
-  res.send("Good db")
+router.post('/db', function (req, res, next) {
+
+  Person.create({
+    username: 'admin',
+    password: req.body['password'],
+    usertype: 'ADMIN'
+  })
+    .then(data => {
+      res.status(201).json({ status: "Success", id: data.id })
+    })
+    .catch(err => handleError(res, err,));
 
 });
 
